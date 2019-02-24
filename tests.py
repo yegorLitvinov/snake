@@ -1,4 +1,15 @@
-from game import Snake, Position, Direction
+from game import Snake, Position, Direction, Apple
+from utils import randchoice
+
+
+def test_position():
+    p1 = Position(1, 2)
+    p2 = p1.copy()
+    assert p1 == p2
+    p1.x = 4
+    assert p2.x == 1
+    assert p2.y == 2
+    assert p1 != p2
 
 
 def test_snake_calc_next_head_postion():
@@ -34,5 +45,36 @@ def test_snake_move():
     assert snake.direction == Direction.UP
     
 
+def test_apple_respawn():
+    size = 10
+    matrix = [[False for j in range(size)] for i in range(size)]
+    apple = Apple(size, size)
+    assert apple.position.x == 0
+    assert apple.position.y == 0
+    assert apple.width == 10
+    assert apple.height == 10
+    for i in range(10):
+        x = apple.position.x
+        y = apple.position.y
+        apple.respawn(matrix)
+        assert 0 <= apple.position.x < size
+        assert 0 <= apple.position.y < size
+
+
+def test_randchoice():
+    size = 10
+    iterable = [i for i in range(size)]
+    counter = {i: 0 for i in range(size)}
+    for i in range(10000):
+        choice = randchoice(iterable)
+        counter[choice] += 1
+    print("'randchoice' results:")
+    for key, value in counter.items():
+        print("{}:\t{:.1f}%".format(key, value / 100))
+
+
+test_position()
 test_snake_calc_next_head_postion()
 test_snake_move()
+test_apple_respawn()
+test_randchoice()

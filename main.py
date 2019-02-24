@@ -3,8 +3,8 @@ import utime
 from game import Game
 
 
-WIDHT = 4
-HEIGHT = 4
+WIDHT = 10
+HEIGHT = 10
 g = Game(WIDHT, HEIGHT)
 
 
