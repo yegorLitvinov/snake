@@ -33,9 +33,9 @@ class Direction:
 
 
 class DrawableObject:
-    EMPTY = 1
-    APPLE = 2
-    SNAKE = 3
+    EMPTY = ""
+    APPLE = "@"
+    SNAKE = "#"
     
 
 class Snake:
@@ -103,6 +103,11 @@ class Snake:
     def eat(self):
         self.is_eating = True
 
+    def is_smashed(self):
+        for i in range(1, len(self.skeleton)):
+            if self.head.current_position == self.skeleton[i].current_position:
+                return True
+        return False
 
 class Apple:
     def __init__(self, height: int, width: int):
@@ -123,7 +128,7 @@ class BaseDisplay:
     def __init__(self, width: int, height: int):
         self.width = width
         self.height = height
-        self.matrix = [[False for j in range(width)] for i in range(height)]
+        self.matrix = [[DrawableObject.EMPTY for j in range(width)] for i in range(height)]
 
     def set_position(self, position: Position, obj):
         self.matrix[position.y][position.x] = obj
@@ -131,7 +136,7 @@ class BaseDisplay:
     def clear(self):
         for i in range(self.height):
             for j in range(self.width):
-                self.matrix[i][j] = False
+                self.matrix[i][j] = DrawableObject.EMPTY
 
     def draw(self):
         raise NotImplementedError()
@@ -142,12 +147,10 @@ class ConsoleDisplay(BaseDisplay):
         print("")
         for i in range(self.height):
             for j in range(self.width):
-                if self.matrix[i][j] == DrawableObject.SNAKE:
-                    print("#", end="")
-                elif self.matrix[i][j] == DrawableObject.APPLE:
-                    print("@", end="")
-                else:
+                if self.matrix[i][j] == DrawableObject.EMPTY:
                     print(".", end="")
+                else:
+                    print(self.matrix[i][j], end="")
             print("")
         print("")
     
@@ -183,10 +186,12 @@ class Game:
         self.display.clear()
         direction = self.controller.get_direction()
         self.snake.move(direction)
+        if self.snake.is_smashed():
+            raise Exception()
+        for vertebra in self.snake.skeleton:
+            self.display.set_position(vertebra.current_position, DrawableObject.SNAKE)
         if self.snake.head.current_position == self.apple.position:
             self.snake.eat()
             self.apple.respawn(self.display.matrix)
-        for vertebra in self.snake.skeleton:
-            self.display.set_position(vertebra.current_position, DrawableObject.SNAKE)
         self.display.set_position(self.apple.position, DrawableObject.APPLE)
         self.display.draw()

@@ -46,19 +46,23 @@ def test_snake_move():
     
 
 def test_apple_respawn():
-    size = 10
-    matrix = [[False for j in range(size)] for i in range(size)]
+    size = 3
+    matrix = [
+        ["#", "", ""],
+        ["#", "#", ""],
+        ["#", "", "#"],
+    ]
     apple = Apple(size, size)
     assert apple.position.x == 0
     assert apple.position.y == 0
-    assert apple.width == 10
-    assert apple.height == 10
-    for i in range(10):
+    for i in range(100):
+        apple.respawn(matrix)
         x = apple.position.x
         y = apple.position.y
-        apple.respawn(matrix)
-        assert 0 <= apple.position.x < size
-        assert 0 <= apple.position.y < size
+        assert 0 <= x < size
+        assert 0 <= y < size
+        assert x != y
+        assert x != 0
 
 
 def test_randchoice():
